@@ -1,4 +1,4 @@
-# Python-related
+#Python-related
 __pycache__/
 *.pyc
 *.pyo
@@ -11,37 +11,22 @@ env/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Virtual Environment (macOS/Linux)
+#Virtual Environment (macOS/Linux)
 *.venv
 bin/
 lib/
 lib64/
 pyvenv.cfg
 
-# Jupyter Notebook Checkpoints (If Using Jupyter)
-.ipynb_checkpoints/
-
-# Log Files
-*.log
-logs/
-debug.log
-nohup.out
-
-# Database Files (SQLite — REMOVE if only using PostgreSQL)
-*.db
-*.sqlite
-*.sqlite3
-fisheries.db
-
-# PostgreSQL (Ignore Credentials)
+#PostgreSQL (Ignore Credentials)
 *.pgpass
 *.pg_service.conf
 
-# Environment Configuration Files (To avoid exposing secrets)
+#Environment Configuration Files
 .env
 *.env
 
-# Data Files (To avoid committing large datasets)
+#Data Files
 data/*.csv
 data/*.json
 data/*.parquet
@@ -52,11 +37,11 @@ data/temp/
 *.tgz
 *.bak
 
-# IDE & Editor Config Files
+#IDE & Editor Config Files
 .vscode/
 .idea/
 *.iml
 
-# macOS System Files
+#macOS System Files
 .DS_Store
 Thumbs.db
