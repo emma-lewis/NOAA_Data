@@ -1,15 +1,15 @@
-# **NOAA Fisheries Data Analysis**
-### **Exploring West Coast Groundfish Bottom Trawl Survey (WCGBTS) Data with PostgreSQL and Python**
+# NOAA Fisheries Data Analysis
+### Exploring West Coast Groundfish Bottom Trawl Survey (WCGBTS) Data with PostgreSQL and Python
 
 ## **Project Overview**
 This project processes and analyzes NOAA's **West Coast Groundfish Bottom Trawl Survey (WCGBTS)** dataset. It retrieves, cleans, and loads fisheries data into a **PostgreSQL database**, then performs exploratory data analysis using SQL and Python.
 
 ### **Key Features:**
--**Automated Data Retrieval:** Downloads NOAA WCGBTS data via RESTful API, creating a flexible tool that can adapt over time as new data is added to the survey.   
--**Database Integration:** Stores structured data in a **PostgreSQL** database, allowing fast querying, filtering, and structured storage without repeatedly loading large files.   
--**Data Cleaning & Standardization:** Uses `pandas` to preprocess raw data and ensure consistent formats.   
--**SQL-Based Data Analysis:** Executes predefined queries to extract insights, simplifying repetitive analysis by storing queries and allowing the user to run them anytime.   
--**Visualizations:** Generates **trend plots & species distributions** using `matplotlib`.  
+- **Automated Data Retrieval:** Downloads NOAA WCGBTS data via RESTful API, creating a flexible tool that can adapt over time as new data is added to the survey.   
+- **Database Integration:** Stores structured data in a **PostgreSQL** database, allowing fast querying, filtering, and structured storage without repeatedly loading large files.   
+- **Data Cleaning & Standardization:** Uses `pandas` to preprocess raw data and ensure consistent formats.   
+- **SQL-Based Data Analysis:** Executes predefined queries to extract insights, simplifying repetitive analysis by storing queries and allowing the user to run them anytime.   
+- **Visualizations:** Generates **trend plots & species distributions** using `matplotlib`.  
 
 ## **Project Structure**
 ```
@@ -18,17 +18,15 @@ NOAA_DATA/
 │── db/                      # Scripts for database queries and analysis
 │   ├── fetch_db_data.py     # Retrieves and prints database records
 │   ├── analyze_data.py      # Runs analysis & generates visualizations
-│── sql/                     # SQL scripts for database setup and queries
+│── sql/                     # SQL scripts for database setup
 │   ├── create_tables.sql    # Defines database schema
 │   ├── analysis_queries.sql # Contains reusable SQL queries
-│── src/                     # Core processing modules
-│   ├── api_client.py        # Handles API requests to NOAA
-│   ├── data_processor.py    # Cleans and standardizes data
+│── src/                     # Core database management logic
 │   ├── db_manager.py        # Manages database connection & transactions
 │── main.py                  # Orchestrates full ETL pipeline
-│── .env.example             # Template for setting up environment variables
+│── .env.example             # Template for setting up environment configuration
 │── README.md                # Project documentation
-│── requirements.txt         # Dependencies for the project
+│── requirements.txt         # Dependencies
 ```
 
 ---
@@ -71,7 +69,7 @@ Create a **.env** file in the project root by copying the example:
 ```bash
 cp .env.example .env
 ```
-Edit .env with your PostgreSQL credentials:
+Edit **.env** with your PostgreSQL credentials:
 ```ini
 DB_NAME=noaa_data
 DB_USER=your_username
