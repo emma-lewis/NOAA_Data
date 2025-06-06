@@ -117,7 +117,3 @@ python db/analyze_data.py
 This project uses publicly available fisheries data from the **West Coast Groundfish Bottom Trawl Survey** from NOAA's FRAM Data Warehouse.   
 
 **Contact:** emlew21@gmail.com | https://github.com/emma-lewis
-
-[def]: data/Total_Catch_Weight.png
-[def2]: data/Total_Catch_Weight.png
-[def3]: data/Species_Count.png
