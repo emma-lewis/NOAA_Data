@@ -19,19 +19,24 @@ def download_csv():
         logging.info(f"CSV file already exists: {CSV_FILE_PATH}")
         return CSV_FILE_PATH
 
-    logging.info(f"Downloading CSV file from {CSV_URL}")
-    df = pd.read_csv(CSV_URL)
+    try:
+        logging.info(f"Downloading CSV file from {CSV_URL}")
+        df = pd.read_csv(CSV_URL)
     
-    if df.empty:
-        logging.error("Downloaded file is empty!")
+        if df.empty:
+            logging.error("Downloaded file is empty!")
+            return None
+    
+        df.to_csv(CSV_FILE_PATH, index=False)
+        logging.info(f"CSV file downloaded successfully: {CSV_FILE_PATH}")
+        return CSV_FILE_PATH
+    
+    except Exception as e:
+        logging.error(f"Error downloading or saving CSV: {e}")
         return None
-    
-    df.to_csv(CSV_FILE_PATH, index=False)
-    logging.info(f"CSV file downloaded successfully: {CSV_FILE_PATH}")
-    return CSV_FILE_PATH
 
 def clean_dataframe(df):
-    """Process and clean the data before inserting into the database."""
+    """Clean and standardize the data before inserting into the database."""
     logging.info("Cleaning and formatting data...")
 
     # Rename columns for consistency
@@ -47,8 +52,9 @@ def clean_dataframe(df):
     }, inplace=True)
 
     # Convert date column
-    df["Year"] = pd.to_datetime(df["Year"], format="%Y%m%d", errors="coerce").dt.year
-    df["Month"] = pd.to_datetime(df["Year"], format="%Y%m%d", errors="coerce").dt.month
+    df["Year"] = pd.to_datetime(df["Year"], format="%Y%m%d", errors="coerce")
+    df["Month"] = df["Year"].dt.month.fillna(1).astype(int)
+    df["Year"] = df["Year"].dt.year
 
     # Ensure Month is not NaN
     df["Month"] = df["Month"].fillna(1).astype(int)  # Default to January (1) if missing
@@ -74,6 +80,7 @@ def clean_dataframe(df):
     return df
 
 def main():
+    """Main ETL process: download, clean, and insert WCGBTS data into PostgreSQL."""
     logging.info("Starting NOAA Data Processing")
 
     csv_path = download_csv()
@@ -81,18 +88,24 @@ def main():
         logging.error("No valid CSV file found. Exiting.")
         return
 
-    df = pd.read_csv(csv_path, low_memory=False)
-    logging.info(f"Loaded {len(df)} rows from CSV.")
-
+    try:
+        df = pd.read_csv(csv_path, low_memory=False)
+        logging.info(f"Loaded {len(df)} rows from CSV.")
+    except Exception as e:
+        logging.error(f"Failed to read CSV: {e}")
+        return
+    
     df = clean_dataframe(df)
 
-    print(f"Inserting {len(df)} rows into the database...")
-    print(df.head())  # Show first 5 rows before inserting
+    logging.info(f"Inserting {len(df)} rows into the database...")
 
-    db = Database()
-    db.create_tables()
-    db.insert_wcgbts_data(df)
-    db.close_connection()
+    try:
+        db = Database()
+        db.create_tables()
+        db.insert_wcgbts_data(df)
+        db.close_connection()
+    except Exception as e:
+        logging.error(f"Database operation failed: {e}")
 
 if __name__ == "__main__":
     main()

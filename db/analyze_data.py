@@ -1,9 +1,27 @@
-from sqlalchemy import create_engine
+import os
+import logging
 import pandas as pd
+from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
 
-DATABASE_URL = "postgresql://emma:password@localhost:5432/noaa_data"
-engine = create_engine(DATABASE_URL)
+# Load .env file if available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+# Logging setup
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Environment-based DB config
+DB_USER = os.getenv("DB_USER", "")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "noaa_data")
+
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Query 1: Total Catch Weight by Year
 query_catch_weight = """
@@ -12,7 +30,6 @@ FROM wcgbts_data
 GROUP BY year
 ORDER BY year;
 """
-df_catch_weight = pd.read_sql_query(query_catch_weight, engine)
 
 # Query 2: Species Count per Year
 query_species = """
@@ -21,28 +38,44 @@ FROM wcgbts_data
 GROUP BY year
 ORDER BY year;
 """
-df_species = pd.read_sql_query(query_species, engine)
 
-engine.dispose()
-
-# Check if queries returned data
-if df_catch_weight.empty:
-    print("No data found for catch weight.")
-else:
-    plt.figure(figsize=(10, 5))
-    plt.plot(df_catch_weight["year"], df_catch_weight["total_catch_weight"], marker="o")
+# Plot
+def plot_total_catch_weight(df):
+    df.plot(x="year", y="total_catch_weight", kind="line", marker="o", title="Total Catch Weight Over Time")
     plt.xlabel("Year")
     plt.ylabel("Total Catch Weight (kg)")
-    plt.title("Total Catch Weight Over Time")
-    plt.grid()
-    plt.show()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('data/Total_Catch_Weight.png')
+    plt.close()
+    logging.info("Saved plot: data/Total_Catch_Weight.png")
 
-if df_species.empty:
-    print("No data found for species count.")
-else:
-    plt.figure(figsize=(10, 5))
-    plt.bar(df_species["year"], df_species["species_count"])
+def plot_species_count(df):
+    df.plot(x='year', y='species_count', kind='bar', title='Species Count by Year')
     plt.xlabel("Year")
     plt.ylabel("Species Count")
-    plt.title("Species Count by Year")
-    plt.show()
+    plt.tight_layout()
+    plt.savefig('data/Species_Count.png')
+    plt.close()
+    logging.info("Saved plot: data/Species_Count.png")
+
+def main():
+    """Runs analysis queries and generates visualizations from wcgbts_data."""
+    try:
+        engine = create_engine(DATABASE_URL)
+        logging.info("Connected to database.")
+
+        df_catch_weight = pd.read_sql_query(query_catch_weight, engine)
+        df_species_count = pd.read_sql_query(query_species, engine)
+
+        plot_total_catch_weight(df_catch_weight)
+        plot_species_count(df_species_count)
+
+    except Exception as e:
+        logging.error(f"Failed to analyze or plot data: {e}")
+    finally:
+        engine.dispose()
+        logging.info("Database connection closed.")
+
+if __name__ == "__main__":
+    main()   

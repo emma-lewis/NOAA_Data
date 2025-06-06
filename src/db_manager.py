@@ -1,16 +1,24 @@
-import psycopg2
+import os
 import logging
+import psycopg2
 from psycopg2 import sql
+
+# Load .env if available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 DB_CONFIG = {
-    "dbname": "noaa_data",
-    "user": "emma",
-    "password": "password",
-    "host": "localhost",
-    "port": "5432"
+    "dbname": os.getenv("DB_NAME", "noaa_data"),
+    "user": os.getenv("DB_USER", ""),
+    "password": os.getenv("DB_PASSWORD", ""),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": os.getenv("DB_PORT", "5432")
 }
 
 class Database:
@@ -46,9 +54,14 @@ class Database:
             performance TEXT
         );
         """
-        self.cursor.execute(create_table_query)
-        self.conn.commit()
-        logging.info("Tables created successfully.")
+        try:
+            self.cursor.execute(create_table_query)
+            self.conn.commit()
+            logging.info("Tables created successfully.")
+        except Exception as e:
+            self.conn.rollback()
+            logging.error(f"Failed to create tables: {e}")
+            raise
 
     def insert_wcgbts_data(self, df):
         """Insert cleaned CSV data into PostgreSQL."""
