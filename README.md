@@ -93,7 +93,9 @@ python db/fetch_db_data.py
 ```bash
 python db/analyze_data.py
 ```
-- This creates **data/Total_Catch_Weight.png** and **data/Species_Count.png**.
+- This saves visualizations to the data/ folder as:
+  -  **data/Total_Catch_Weight.png**
+  -  **data/Species_Count.png**.
 ---
 
 ## **Visualizations**
