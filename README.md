@@ -88,6 +88,7 @@ python main.py
 ```bash
 python db/fetch_db_data.py
 ```
+- This returns the **most prevalent species** (those appearing in the most sampling events) and the **most caught species** (those caught in highest total numbers), helping distinguish between widespread presence and local population density.
 
 #### **C. Run Analysis & Generate Visualizations**
 ```bash
